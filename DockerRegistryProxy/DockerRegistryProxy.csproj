@@ -49,7 +49,7 @@
   <ItemGroup>
     <Compile Include="DockerRegistryProxy.cs" />
     <Compile Include="DockerRegistryV1Proxy.cs" />
-    <Compile Include="DockerRegistryV2Provider.cs" />
+    <Compile Include="DockerRegistryV2Proxy.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

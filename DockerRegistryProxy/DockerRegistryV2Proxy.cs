@@ -3,23 +3,34 @@ using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace DockerRegistryProxy
 {
-    public class DockerRegistryV2Provider : DockerRegistryProxy
+    public class DockerRegistryV2Proxy : DockerRegistryProxy
     {
-        public DockerRegistryV2Provider(string username, string password) : base(username, password)
+        public DockerRegistryV2Proxy(string baseUrl, string username, string password)
+            : base(baseUrl, username, password)
         {
         }
 
+        public override async Task<bool> IsApiVersionSupportedAsync()
+        {
+            UriBuilder uriBuilder = new UriBuilder(this.BaseUrl);
+            uriBuilder.Path = "/v2/";
+            using (var response = await this._client.GetAsync(uriBuilder.ToString()))
+            {
+                return response.StatusCode == HttpStatusCode.OK;
+            }
+        }
+
         public override async Task<DockerRegistryResponse> GetRepositoryTagAsync(
-            string baseUrl,
             string repository,
             string tag)
         {
-            UriBuilder uriBuilder = new UriBuilder(baseUrl);
+            UriBuilder uriBuilder = new UriBuilder(this.BaseUrl);
             uriBuilder.Path = string.Format("/v2/{0}/tags/list", repository);
 
             bool success = false;

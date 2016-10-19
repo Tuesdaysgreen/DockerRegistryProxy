@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -9,16 +10,26 @@ namespace DockerRegistryProxy
 
     public class DockerRegistryV1Proxy : DockerRegistryProxy 
     {
-        public DockerRegistryV1Proxy(string username, string password) : base(username, password)
+        public DockerRegistryV1Proxy(string baseUrl, string username, string password)
+            : base(baseUrl, username, password)
         {
         }
 
+        public override async Task<bool> IsApiVersionSupportedAsync()
+        {
+            UriBuilder uriBuilder = new UriBuilder(this.BaseUrl);
+            uriBuilder.Path = "/v1/";
+            using (var response = await this._client.GetAsync(uriBuilder.ToString()))
+            {
+                return response.StatusCode == HttpStatusCode.OK;
+            }
+        }
+
         public override async Task<DockerRegistryResponse> GetRepositoryTagAsync(
-            string baseUrl,
             string repository,
             string tag)
         {
-            UriBuilder uriBuilder = new UriBuilder(baseUrl);
+            UriBuilder uriBuilder = new UriBuilder(this.BaseUrl);
 
             if (!string.IsNullOrEmpty(tag))
             {

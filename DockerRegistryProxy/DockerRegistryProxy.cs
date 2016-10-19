@@ -15,16 +15,23 @@ namespace DockerRegistryProxy
     public class DockerRegistryProxy : IDisposable
     {
         public const string DOCKERHUB_BASEURL = "https://index.docker.io";
-
+        protected string BaseUrl { get; set; }
         protected HttpClient _client = null;
 
-        public DockerRegistryProxy(string username, string password)
+        public DockerRegistryProxy(string baseUrl, string username, string password)
         {
+            this.BaseUrl = baseUrl;
             this._client = CreateHttpClient(username, password);
         }
 
         #pragma warning disable 1998
-        public virtual async Task<DockerRegistryResponse> GetRepositoryTagAsync(string baseUrl, string repository, string tag)
+        public virtual async Task<bool> IsApiVersionSupportedAsync()
+        {
+            throw new NotImplementedException("IsApiVersionSupportedAsync");
+        }
+
+        #pragma warning disable 1998
+        public virtual async Task<DockerRegistryResponse> GetRepositoryTagAsync(string repository, string tag)
         {
             throw new NotImplementedException("GetRepositoryTagAsync");
         }

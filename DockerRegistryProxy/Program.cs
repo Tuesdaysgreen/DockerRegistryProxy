@@ -17,25 +17,43 @@ namespace DockerRegistryProxy
             {
                 try
                 {
-                    using (var v1Proxy = new DockerRegistryV1Proxy(null, null))
+                    using (var v1Proxy = new DockerRegistryV1Proxy(DockerRegistryProxy.DOCKERHUB_BASEURL, null, null))
                     {
-                        var response = await v1Proxy.GetRepositoryTagAsync(DockerRegistryProxy.DOCKERHUB_BASEURL, "nginx", "");
-
-                        if (response.Success)
+                        if(await v1Proxy.IsApiVersionSupportedAsync())
                         {
-                            Console.WriteLine("Success");
+                            Console.WriteLine("V1 Supported");
                         }
                         else
                         {
-                            Console.WriteLine("Failed");
+                            Console.WriteLine("V1 Not supported");
+                        }
+
+                        var response = await v1Proxy.GetRepositoryTagAsync("nginx", "");
+
+                        if (response.Success)
+                        {
+                            Console.WriteLine("V1 Success");
+                        }
+                        else
+                        {
+                            Console.WriteLine("V1 Failed");
                         }
 
                         Console.WriteLine(response.Content);
                     }
 
-                    using (var v2Proxy = new DockerRegistryV2Provider("", ""))
+                    using (var v2Proxy = new DockerRegistryV2Proxy("", null, null))
                     {
-                        var response = await v2Proxy.GetRepositoryTagAsync("", "", "");
+                        if(await v2Proxy.IsApiVersionSupportedAsync())
+                        {
+                            Console.WriteLine("V2 Supported");
+                        }
+                        else
+                        {
+                            Console.WriteLine("V2 Not Supported");
+                        }
+
+                        var response = await v2Proxy.GetRepositoryTagAsync("", "");
 
                         if (response.Success)
                         {
